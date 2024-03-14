@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 import face_recognition
 from ultralytics import YOLO
-from sort import *
 import tensorflow as tf
+from sort import *
 from tensorflow.keras.models import load_model
 import cvzone
 import math
@@ -15,13 +15,13 @@ import base64
 from pymongo import MongoClient
 import os
 from bson.binary import Binary
-import tkinter as tk
-from tkinter import filedialog
+
 import random
 num = random.random()
 
 
-
+fourcc = cv2.VideoWriter_fourcc(*'XVID')  # Codec
+out = cv2.VideoWriter('output_video.avi', fourcc, 20.0, (640, 480))
 #client = MongoClient('mongodb+srv://ganeshyadharth:AbleLyf@students.jbrazv2.mongodb.net/?retryWrites=true&w=majority')
 #mongo_db = client["attendance"]
 
@@ -220,7 +220,7 @@ while True:
             # Display bounding box and behavior
             w, h = x2 - x1, y2 - y1
             cvzone.cornerRect(img, (x1, y1, w, h), l=9, rt=2, colorR=(255, 0, 255))
-
+            print("stop")
             # Check if this is the first time detecting this person and behavior
             if (id, predicted_class) not in start_times_behavior:
                 start_times_behavior[(id, predicted_class)] = datetime.now()
@@ -234,6 +234,7 @@ while True:
             elapsed_time_behavior = (datetime.now() - start_times_behavior[(id, predicted_class)]).total_seconds()
            
             actCur = CLASSES_LIST[predicted_class]
+            print(name , actCur)
             updateDuplicate(name, actCur)
                 
             # Update the existing record with the current time
@@ -270,7 +271,8 @@ while True:
 
     # Save the pie chart to an image file (e.g., PNG)
     plt.savefig('behavior_pie_chart.png')
-
+    out.write(img)
+    cv2.imwrite('output.png', img)
     # Display the output
     #cv2.imshow("Integrated Detection", img)
     k = cv2.waitKey(1)
